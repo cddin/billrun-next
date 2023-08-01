@@ -55,6 +55,7 @@ const AuthContext = createContext({
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   register: () => Promise.resolve(),
+  loginCheck: () => Promise.resolve(),
 });
 
 // ----------------------------------------------------------------------
@@ -113,12 +114,39 @@ function AuthProvider({ children }) {
     form.append('username', username);
     form.append('password', password);
     // http://localhost:8074/api/auth
-    const response = await axios.post('/api/auth', form);
-    console.log('response', response);
+    const response = await axios.post('/api/auth', form, { withCredentials: true });
+    console.log('response', response?.data?.details);
+    if (!response?.data?.details) {
+      return Promise.reject({ message: 'Incorrect username or password, please try again.' });
+    }
 
     // http://localhost:8074/api/settings?category=pricing&data=%7B%7D
-    // const response1 = await axios.get('/api/settings?category=pricing&data=%7B%7D', { withCredentials: true });
-    // console.log('response1', response1);
+    // for testing
+    const response1 = await axios.get('/api/settings?category=pricing&data=%7B%7D', { withCredentials: true });
+    console.log('response1', response1);
+
+    const { accessToken, details } = response.data;
+
+    setSession(accessToken);
+
+    dispatch({
+      type: 'LOGIN',
+      payload: {
+        user: details,
+      },
+    });
+  };
+
+  const loginCheck = async () => {
+    // http://localhost:8074/api/auth
+    const response = await axios.post('/api/auth', null, { withCredentials: true });
+    console.log('response--', response);
+    if (!response?.data?.details) {
+      return;
+    }
+
+    const response1 = await axios.get('/api/settings?category=pricing&data=%7B%7D', { withCredentials: true });
+    console.log('response1', response1);
 
     const { accessToken, details } = response.data;
 
@@ -163,6 +191,7 @@ function AuthProvider({ children }) {
         login,
         logout,
         register,
+        loginCheck,
       }}
     >
       {children}

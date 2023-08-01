@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // next
 import NextLink from 'next/link';
 // form
@@ -20,11 +20,15 @@ import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hoo
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
-  const { login } = useAuth();
+  const { login, loginCheck } = useAuth();
 
   const isMountedRef = useIsMountedRef();
 
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    loginCheck();
+  }, []);
 
   const LoginSchema = Yup.object().shape({
     username: Yup.string().required('username is required'),
