@@ -9,7 +9,25 @@ import { isValidToken, setSession } from '../utils/jwt';
 const initialState = {
   isAuthenticated: false,
   isInitialized: false,
-  user: null,
+  user: {
+    displayName: null,
+    photoURL: null, // https://i.pravatar.cc/300
+    uid: null,
+    //
+    phoneNumber: null,
+    email: null,
+    role: null,
+    address: null,
+    country: null,
+    city: null,
+    zipCode: null,
+    state: null,
+    avatarURL: null,
+    isVerified: null,
+    status: null,
+    company: null,
+    isPublic: null,
+  },
 };
 
 const handlers = {
@@ -19,16 +37,17 @@ const handlers = {
       ...state,
       isAuthenticated,
       isInitialized: true,
-      user,
+      user: { ...initialState.user, ...user },
     };
   },
   LOGIN: (state, action) => {
     const { user } = action.payload;
+    const { user: prevUser } = state;
 
     return {
       ...state,
       isAuthenticated: true,
-      user,
+      user: { ...prevUser, ...user },
     };
   },
   LOGOUT: (state) => ({
@@ -113,7 +132,6 @@ function AuthProvider({ children }) {
     const form = new FormData();
     form.append('username', username);
     form.append('password', password);
-    // http://localhost:8074/api/auth
     const response = await axios.post('/api/auth', form, { withCredentials: true });
     console.log('response', response?.data?.details);
     if (!response?.data?.details) {
@@ -132,7 +150,10 @@ function AuthProvider({ children }) {
     dispatch({
       type: 'LOGIN',
       payload: {
-        user: details,
+        user: {
+          displayName: details?.user,
+          // photoURL: 'https://i.pravatar.cc/300',
+        },
       },
     });
   };
@@ -155,7 +176,10 @@ function AuthProvider({ children }) {
     dispatch({
       type: 'LOGIN',
       payload: {
-        user: details,
+        user: {
+          displayName: details?.user,
+          // photoURL: 'https://i.pravatar.cc/300',
+        },
       },
     });
   };
@@ -179,6 +203,7 @@ function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    await axios.post('/api/auth?action=logout', null, { withCredentials: true });
     setSession(null);
     dispatch({ type: 'LOGOUT' });
   };
