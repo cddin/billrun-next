@@ -45,7 +45,7 @@ export default function HomePage() {
   }, []);
   return (
     <Page title="The starting point for your next project">
-      <HomeHero />
+      {/* <HomeHero />
 
       <ContentStyle>
         <HomeMinimal />
@@ -63,7 +63,7 @@ export default function HomePage() {
         <HomeLookingFor />
 
         <HomeAdvertisement />
-      </ContentStyle>
+      </ContentStyle> */}
     </Page>
   );
 }

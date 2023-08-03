@@ -37,7 +37,7 @@ const navConfig = [
       { title: 'Billing', path: PATH_DASHBOARD.general.analytics, icon: ICONS.analytics },
       { title: 'Customers', path: PATH_DASHBOARD.general.banking, icon: ICONS.banking },
       { title: 'Usage', path: PATH_DASHBOARD.general.booking, icon: ICONS.booking },
-      { title: 'Discount/LAD', path: PATH_DASHBOARD.general.booking, icon: ICONS.cart },
+      { title: 'Discount/LAD (sample)', path: PATH_DASHBOARD.general.discount, icon: ICONS.cart },
     ],
   },
 
