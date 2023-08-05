@@ -1,8 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 // utils
-import axios from '../../utils/axios';
+// import axios from '../../utils/axios';
 //
 import { dispatch } from '../store';
+
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -104,7 +106,7 @@ export function getEvents() {
   return async () => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get('/api/calendar/events');
+      const response = await axios.get('https://minimal-assets-api-dev.vercel.app/api/calendar/events');
       dispatch(slice.actions.getEventsSuccess(response.data.events));
     } catch (error) {
       dispatch(slice.actions.hasError(error));

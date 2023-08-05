@@ -1,5 +1,5 @@
 import { paramCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // next
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -27,8 +27,6 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 import useTabs from '../../../hooks/useTabs';
 import useSettings from '../../../hooks/useSettings';
 import useTable, { getComparator, emptyRows } from '../../../hooks/useTable';
-// _mock_
-import { _userList } from '../../../_mock';
 // layouts
 import Layout from '../../../layouts';
 // components
@@ -39,30 +37,22 @@ import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 import { TableEmptyRows, TableHeadCustom, TableNoData, TableSelectedActions } from '../../../components/table';
 // sections
 import { UserTableToolbar, UserTableRow } from '../../../sections/@dashboard/user/list';
+//
+import { useDispatch, useSelector } from '../../../redux/store';
+import { getUsers } from '../../../redux/slices/users';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = ['all', 'active', 'banned'];
 
-const ROLE_OPTIONS = [
-  'all',
-  'ux designer',
-  'full stack designer',
-  'backend developer',
-  'project manager',
-  'leader',
-  'ui designer',
-  'ui/ux designer',
-  'front end developer',
-  'full stack developer',
-];
+const ROLE_OPTIONS = ['all', 'read', 'write', 'reports', 'admin'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
-  { id: 'company', label: 'Company', align: 'left' },
+  // { id: 'company', label: 'Company', align: 'left' },
   { id: 'role', label: 'Role', align: 'left' },
-  { id: 'isVerified', label: 'Verified', align: 'center' },
-  { id: 'status', label: 'Status', align: 'left' },
+  // { id: 'isVerified', label: 'Verified', align: 'center' },
+  // { id: 'status', label: 'Status', align: 'left' },
   { id: '' },
 ];
 
@@ -97,13 +87,25 @@ export default function UserList() {
 
   const { push } = useRouter();
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState([]);
 
   const [filterName, setFilterName] = useState('');
 
   const [filterRole, setFilterRole] = useState('all');
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
+
+  const { userList } = useSelector((state) => state.users);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setTableData(userList);
+  }, [userList]);
 
   const handleFilterName = (filterName) => {
     setFilterName(filterName);
@@ -228,9 +230,9 @@ export default function UserList() {
                 />
 
                 <TableBody>
-                  {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                  {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                     <UserTableRow
-                      key={row.id}
+                      key={`${index}_${row.id}`}
                       row={row}
                       selected={selected.includes(row.id)}
                       onSelectRow={() => onSelectRow(row.id)}
@@ -258,11 +260,11 @@ export default function UserList() {
               onRowsPerPageChange={onChangeRowsPerPage}
             />
 
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Switch checked={dense} onChange={onChangeDense} />}
               label="Dense"
               sx={{ px: 3, py: 1.5, top: 0, position: { md: 'absolute' } }}
-            />
+            /> */}
           </Box>
         </Card>
       </Container>
@@ -292,7 +294,7 @@ function applySortFilter({ tableData, comparator, filterName, filterStatus, filt
   }
 
   if (filterRole !== 'all') {
-    tableData = tableData.filter((item) => item.role === filterRole);
+    tableData = tableData.filter((item) => item.roles.find((item) => item === filterRole));
   }
 
   return tableData;

@@ -47,8 +47,8 @@ const navConfig = [
     subheader: 'management',
     items: [
       { title: 'User', path: PATH_DASHBOARD.user.list, icon: ICONS.user },
-      { title: 'Audit Trail', path: PATH_DASHBOARD.user.new, icon: ICONS.kanban },
-      { title: 'Settings', path: PATH_DASHBOARD.user.demoEdit, icon: ICONS.blog },
+      { title: 'Audit Trail', path: PATH_DASHBOARD.general.banking, icon: ICONS.kanban },
+      { title: 'Settings', path: PATH_DASHBOARD.general.booking, icon: ICONS.blog },
       // { title: 'account', path: PATH_DASHBOARD.user.account },
       // USER
       // {

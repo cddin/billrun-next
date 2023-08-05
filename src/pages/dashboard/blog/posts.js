@@ -61,6 +61,8 @@ export default function BlogPosts() {
 
   const sortedPosts = applySort(posts, filters);
 
+  // **apicall - to update page only
+
   const getAllPosts = useCallback(async () => {
     try {
       const response = await axios.get('/api/blog/posts/all');

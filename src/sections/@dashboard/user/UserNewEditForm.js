@@ -19,6 +19,7 @@ import { countries } from '../../../_mock';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
+import { createUser } from '../../../redux/slices/users';
 
 // ----------------------------------------------------------------------
 
@@ -33,33 +34,17 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email(),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    address: Yup.string().required('Address is required'),
-    country: Yup.string().required('country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role Number is required'),
-    avatarUrl: Yup.mixed().test('required', 'Avatar is required', (value) => value !== ''),
+
+    roles: Yup.string().required('Roles is required'),
+    password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      zipCode: currentUser?.zipCode || '',
-      avatarUrl: currentUser?.avatarUrl || '',
-      isVerified: currentUser?.isVerified || true,
-      status: currentUser?.status,
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      roles: currentUser?.role || '',
+      password: currentUser?.password || '',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
@@ -91,12 +76,20 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, currentUser]);
 
-  const onSubmit = async () => {
+  const onSubmit = async (formdata) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
-      push(PATH_DASHBOARD.user.list);
+      const response = await createUser(formdata);
+
+      if (response.data.status) {
+        reset();
+        enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
+        push(PATH_DASHBOARD.user.list);
+      } else {
+        enqueueSnackbar(!isEdit ? response.data.message : 'Update failed', {
+          variant: 'error',
+        });
+        console.error(response.data.message);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -121,7 +114,7 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        {/* <Grid item xs={12} md={4}>
           <Card sx={{ py: 10, px: 3 }}>
             {isEdit && (
               <Label
@@ -131,30 +124,6 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
                 {values.status}
               </Label>
             )}
-
-            <Box sx={{ mb: 5 }}>
-              <RHFUploadAvatar
-                name="avatarUrl"
-                accept="image/*"
-                maxSize={3145728}
-                onDrop={handleDrop}
-                helperText={
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 2,
-                      mx: 'auto',
-                      display: 'block',
-                      textAlign: 'center',
-                      color: 'text.secondary',
-                    }}
-                  >
-                    Allowed *.jpeg, *.jpg, *.png, *.gif
-                    <br /> max size of {fData(3145728)}
-                  </Typography>
-                }
-              />
-            </Box>
 
             {isEdit && (
               <FormControlLabel
@@ -185,25 +154,8 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
                 sx={{ mx: 0, mb: 3, width: 1, justifyContent: 'space-between' }}
               />
             )}
-
-            <RHFSwitch
-              name="isVerified"
-              labelPlacement="start"
-              label={
-                <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Email Verified
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Disabling this will automatically send the user a verification email
-                  </Typography>
-                </>
-              }
-              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-            />
           </Card>
-        </Grid>
-
+        </Grid> */}
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Box
@@ -214,25 +166,25 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
-              <RHFTextField name="name" label="Full Name" />
+              {/* <RHFTextField name="name" label="Full Name" /> */}
               <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
+              {/* <RHFTextField name="phoneNumber" label="Phone Number" /> */}
 
-              <RHFSelect name="country" label="Country" placeholder="Country">
+              <RHFSelect name="roles" label="Roles" placeholder="Roles">
                 <option value="" />
-                {countries.map((option) => (
-                  <option key={option.code} value={option.label}>
-                    {option.label}
-                  </option>
-                ))}
+                <option value={'read'}>Read</option>
+                <option value={'write'}>Writer</option>
+                <option value={'reports'}>Reports</option>
+                <option value={'admin'}>Admin</option>
               </RHFSelect>
 
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="address" label="Address" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
-              <RHFTextField name="company" label="Company" />
-              <RHFTextField name="role" label="Role" />
+              {/* <RHFTextField name="state" label="State/Region" /> */}
+              {/* <RHFTextField name="city" label="City" /> */}
+              {/* <RHFTextField name="address" label="Address" /> */}
+              {/* <RHFTextField name="zipCode" label="Zip/Code" /> */}
+              {/* <RHFTextField name="company" label="Company" /> */}
+              {/* <RHFTextField name="roles" label="Roles" /> */}
+              <RHFTextField name="password" label="Password" type="password" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

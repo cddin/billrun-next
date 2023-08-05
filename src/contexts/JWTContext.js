@@ -140,8 +140,8 @@ function AuthProvider({ children }) {
 
     // http://localhost:8074/api/settings?category=pricing&data=%7B%7D
     // for testing
-    const response1 = await axios.get('/api/settings?category=pricing&data=%7B%7D', { withCredentials: true });
-    console.log('response1', response1);
+    // const response1 = await axios.get('/api/settings?category=pricing&data=%7B%7D', { withCredentials: true });
+    // console.log('response1', response1);
 
     const { accessToken, details } = response.data;
 
@@ -161,13 +161,13 @@ function AuthProvider({ children }) {
   const loginCheck = async () => {
     // http://localhost:8074/api/auth
     const response = await axios.post('/api/auth', null, { withCredentials: true });
-    console.log('response--', response);
+    console.log('login response', response);
     if (!response?.data?.details) {
       return;
     }
 
-    const response1 = await axios.get('/api/settings?category=pricing&data=%7B%7D', { withCredentials: true });
-    console.log('response1', response1);
+    // const response1 = await axios.get('/api/settings?category=pricing&data=%7B%7D', { withCredentials: true });
+    // console.log('response1', response1);
 
     const { accessToken, details } = response.data;
 
@@ -201,6 +201,8 @@ function AuthProvider({ children }) {
       },
     });
   };
+
+  // **apicall - to update context
 
   const logout = async () => {
     await axios.post('/api/auth?action=logout', null, { withCredentials: true });

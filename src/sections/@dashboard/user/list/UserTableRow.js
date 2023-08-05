@@ -20,8 +20,7 @@ UserTableRow.propTypes = {
 
 export default function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const theme = useTheme();
-
-  const { name, avatarUrl, company, role, isVerified, status } = row;
+  const { name, avatarUrl, company, roles, isVerified, status } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -46,13 +45,13 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         </Typography>
       </TableCell>
 
-      <TableCell align="left">{company}</TableCell>
+      {/* <TableCell align="left">{company}</TableCell> */}
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {role}
+        {roles.toString()}
       </TableCell>
 
-      <TableCell align="center">
+      {/* <TableCell align="center">
         <Iconify
           icon={isVerified ? 'eva:checkmark-circle-fill' : 'eva:clock-outline'}
           sx={{
@@ -62,9 +61,9 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
             ...(!isVerified && { color: 'warning.main' }),
           }}
         />
-      </TableCell>
+      </TableCell> */}
 
-      <TableCell align="left">
+      {/* <TableCell align="left">
         <Label
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
           color={(status === 'banned' && 'error') || 'success'}
@@ -72,7 +71,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         >
           {status}
         </Label>
-      </TableCell>
+      </TableCell> */}
 
       <TableCell align="right">
         <TableMoreMenu
@@ -87,6 +86,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
                   handleCloseMenu();
                 }}
                 sx={{ color: 'error.main' }}
+                disabled
               >
                 <Iconify icon={'eva:trash-2-outline'} />
                 Delete
@@ -96,6 +96,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
                   onEditRow();
                   handleCloseMenu();
                 }}
+                disabled
               >
                 <Iconify icon={'eva:edit-fill'} />
                 Edit
